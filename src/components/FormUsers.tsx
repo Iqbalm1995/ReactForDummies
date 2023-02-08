@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   Progress,
   Box,
@@ -23,8 +23,8 @@ import {
   Container,
   CardFooter,
   FormErrorMessage,
-} from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/react";
+} from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import {
   Formik,
   Form,
@@ -32,64 +32,67 @@ import {
   ErrorMessage,
   useFormik,
   FormikProps,
-} from "formik";
+} from 'formik'
+import * as Yup from 'yup'
 
 interface IinputErrors {
-  username: string;
-  fullName: string;
-  password: string;
-  passwordConfirm: string;
+  username: string
+  fullName: string
+  password: string
+  passwordConfirm: string
 }
 
 interface IDataBinding {
-  username: string;
-  fullName: string;
-  password: string;
+  username: string
+  fullName: string
+  password: string
 }
 
 const initalValues = {
-  username: "",
-  fullName: "",
-  password: "",
-  passwordConfirm: "",
-};
+  username: '',
+  fullName: '',
+  password: '',
+  passwordConfirm: '',
+}
 
-const validate = (values: any) => {
-  const errors: IinputErrors = initalValues;
+interface IPropTypes {
+  editMode: boolean
+  dataBinding: IDataBinding
+}
 
-  if (values.passwordConfirm) {
-    if (values.password != values.passwordConfirm) {
-      errors.passwordConfirm = "Password Tidak Sama";
-    } else {
-      errors.passwordConfirm = "";
-    }
-  }
+const FormSchema = Yup.object().shape({
+  username: Yup.string().required('Required'),
+  fullName: Yup.string().required('Required'),
+  password: Yup.string().required('Required'),
+  passwordConfirm: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords tidak sama')
+    .required('Required'),
+})
 
-  return errors;
-};
+let CurrentEditMode = false
 
-let CurrentEditMode = false;
+export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
+  const [show, setShow] = React.useState(false)
+  const handleClick = () => setShow(!show)
 
-export const FormUsers = ({ editMode, dataBinding }: any) => {
-  const [show, setShow] = React.useState(false);
-  const handleClick = () => setShow(!show);
-
-  const data: IDataBinding = dataBinding;
-  CurrentEditMode = editMode;
+  const data: IDataBinding = dataBinding
+  CurrentEditMode = editMode
 
   const formik = useFormik({
     initialValues: {
       username: data.username,
       fullName: data.fullName,
-      password: "",
-      passwordConfirm: "",
+      password: '',
+      passwordConfirm: '',
     },
-    validate,
+    validationSchema: FormSchema,
+    validateOnChange: false,
+    validateOnBlur: false,
     onSubmit: (values) => {
-      console.log(values);
-      alert("oawkoakwokawo");
+      console.log(values)
+      alert('oawkoakwokawo')
     },
-  });
+  })
 
   return (
     <Card m="3">
@@ -104,7 +107,7 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
               isInvalid={formik.errors.username ? true : false}
               isRequired
             >
-              <FormLabel htmlFor="username" fontWeight={"normal"}>
+              <FormLabel htmlFor="username" fontWeight={'normal'}>
                 Username
               </FormLabel>
               <Input
@@ -113,7 +116,7 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
                 type="text"
                 onChange={formik.handleChange}
                 value={formik.values.username}
-                onBlur={formik.handleBlur}
+                // onBlur={formik.handleBlur}
                 placeholder="Username"
                 disabled={CurrentEditMode}
               />
@@ -125,7 +128,7 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
               isInvalid={formik.errors.fullName ? true : false}
               isRequired
             >
-              <FormLabel htmlFor="fullName" fontWeight={"normal"}>
+              <FormLabel htmlFor="fullName" fontWeight={'normal'}>
                 Full Name
               </FormLabel>
               <Input
@@ -145,7 +148,7 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
               isInvalid={formik.errors.password ? true : false}
               isRequired
             >
-              <FormLabel htmlFor="password" fontWeight={"normal"}>
+              <FormLabel htmlFor="password" fontWeight={'normal'}>
                 Password
               </FormLabel>
               <InputGroup size="md">
@@ -155,13 +158,13 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
                   onChange={formik.handleChange}
                   value={formik.values.password}
                   pr="4.5rem"
-                  type={show ? "text" : "password"}
+                  type={show ? 'text' : 'password'}
                   placeholder="Enter password"
                   disabled={CurrentEditMode}
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
-                    {show ? "Hide" : "Show"}
+                    {show ? 'Hide' : 'Show'}
                   </Button>
                 </InputRightElement>
               </InputGroup>
@@ -172,7 +175,7 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
               isInvalid={formik.errors.passwordConfirm ? true : false}
               isRequired
             >
-              <FormLabel htmlFor="passwordConfirm" fontWeight={"normal"}>
+              <FormLabel htmlFor="passwordConfirm" fontWeight={'normal'}>
                 Password Confirmation
               </FormLabel>
               <InputGroup size="md">
@@ -182,13 +185,13 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
                   onChange={formik.handleChange}
                   value={formik.values.passwordConfirm}
                   pr="4.5rem"
-                  type={show ? "text" : "password"}
+                  type={show ? 'text' : 'password'}
                   placeholder="Enter password Confirmation"
                   disabled={CurrentEditMode}
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
-                    {show ? "Hide" : "Show"}
+                    {show ? 'Hide' : 'Show'}
                   </Button>
                 </InputRightElement>
               </InputGroup>
@@ -218,5 +221,5 @@ export const FormUsers = ({ editMode, dataBinding }: any) => {
         </form>
       </CardBody>
     </Card>
-  );
-};
+  )
+}
