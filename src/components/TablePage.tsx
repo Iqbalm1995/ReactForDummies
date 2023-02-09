@@ -14,12 +14,20 @@ import React from "react";
 import { DataTable } from "./DataTable";
 import FlexContent from "./HeaderContent";
 import { Link, Outlet } from "react-router-dom";
+import { getUserList } from "../services/UserServices";
 
 type UnitConversion = {
   fromUnit: string;
   toUnit: string;
   factor: number;
 };
+
+interface ResponseData {
+  statusCode: number;
+  message: string;
+  count: number;
+  countTotal: number;
+}
 
 const data: UnitConversion[] = [
   {
@@ -63,12 +71,24 @@ export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
 
+  let UserID = null;
+  let GenerateLinkForm = UserID != null ? `/form?userId=${UserID}` : "/form";
+  let dataUsers: ResponseData;
+  try {
+    var UserData = getUserList();
+    UserData.then(function (response) {
+      dataUsers = response.data;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
   return (
     <div>
       <FlexContent titleName={TitlePage} breadCrumb={BreadcrumbData} />
       {/* <MidContentAlt /> */}
       <Flex minWidth="max-content" justifyContent="flex-end" gap="2" m="3">
-        <Link to="/form">
+        <Link to={GenerateLinkForm}>
           <Button colorScheme="teal" size="lg" variant="solid">
             Add User
           </Button>

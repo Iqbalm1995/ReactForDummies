@@ -23,6 +23,7 @@ import {
   Container,
   CardFooter,
   FormErrorMessage,
+  IconButton,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import {
@@ -34,6 +35,13 @@ import {
   FormikProps,
 } from "formik";
 import * as Yup from "yup";
+import {
+  ArrowBackIcon,
+  CheckIcon,
+  CloseIcon,
+  EditIcon,
+} from "@chakra-ui/icons";
+import { Link, Outlet } from "react-router-dom";
 
 interface IinputErrors {
   username: string;
@@ -72,11 +80,15 @@ const FormSchema = Yup.object().shape({
 let CurrentEditMode = false;
 
 export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
+  CurrentEditMode = editMode;
+
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
 
+  const [isDisableInput, setDisable] = React.useState(editMode);
+  const handleDisableClick = () => setDisable(!isDisableInput);
+
   const data: IDataBinding = dataBinding;
-  CurrentEditMode = editMode;
 
   const formik = useFormik({
     initialValues: {
@@ -90,7 +102,7 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
     validateOnBlur: false,
     onSubmit: (values) => {
       console.log(values);
-      alert("oawkoakwokawo");
+      alert("Aaowkoawkoaw");
     },
   });
 
@@ -116,9 +128,8 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
                 type="text"
                 onChange={formik.handleChange}
                 value={formik.values.username}
-                // onBlur={formik.handleBlur}
                 placeholder="Username"
-                disabled={CurrentEditMode}
+                disabled={isDisableInput}
               />
               <FormErrorMessage>{formik.errors.username}</FormErrorMessage>
             </FormControl>
@@ -138,7 +149,7 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
                 onChange={formik.handleChange}
                 value={formik.values.fullName}
                 placeholder="Full Name"
-                disabled={CurrentEditMode}
+                disabled={isDisableInput}
               />
               <FormErrorMessage>{formik.errors.fullName}</FormErrorMessage>
             </FormControl>
@@ -160,7 +171,7 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
                   pr="4.5rem"
                   type={show ? "text" : "password"}
                   placeholder="Enter password"
-                  disabled={CurrentEditMode}
+                  disabled={isDisableInput}
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -187,7 +198,7 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
                   pr="4.5rem"
                   type={show ? "text" : "password"}
                   placeholder="Enter password Confirmation"
-                  disabled={CurrentEditMode}
+                  disabled={isDisableInput}
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -207,14 +218,34 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
             mt="5%"
           >
             <ButtonGroup gap="2">
-              <Button colorScheme="red" size="lg" variant="outline">
-                Cancel
-              </Button>
-              <Button colorScheme="blue" size="lg" variant="outline">
-                Edit Mode
-              </Button>
-              <Button colorScheme="teal" size="lg" type="submit">
-                Submit
+              <Link to={`/`}>
+                <Button
+                  leftIcon={<CloseIcon />}
+                  colorScheme="red"
+                  size="lg"
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+              </Link>
+              {CurrentEditMode && (
+                <Button
+                  leftIcon={<EditIcon />}
+                  colorScheme="blue"
+                  size="lg"
+                  variant="outline"
+                  onClick={handleDisableClick}
+                >
+                  Edit Mode
+                </Button>
+              )}
+              <Button
+                leftIcon={<CheckIcon />}
+                colorScheme="teal"
+                size="lg"
+                type="submit"
+              >
+                Save
               </Button>
             </ButtonGroup>
           </Flex>
