@@ -42,6 +42,7 @@ import {
   EditIcon,
 } from "@chakra-ui/icons";
 import { Link, Outlet } from "react-router-dom";
+import { getUserDetail } from "../services/UserServices";
 
 interface IinputErrors {
   username: string;
@@ -51,6 +52,7 @@ interface IinputErrors {
 }
 
 interface IDataBinding {
+  id: number;
   username: string;
   fullName: string;
   password: string;

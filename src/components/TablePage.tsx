@@ -45,7 +45,7 @@ const columns = [
   }),
   columnHelper.accessor("id", {
     cell: (info) => (
-      <Link to={/form?userId=info.getValue()}>
+      <Link to={`/form?userId=${info.getValue()}`}>
         <Button colorScheme="teal" variant="solid">
           Edit
         </Button>
@@ -62,7 +62,7 @@ const search = "";
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
-  const [resUsers, setResUsers] = React.useState<IResponseData | []>([]);
+  const [resUsers, setResUsers] = React.useState<IResponseData>();
   const [dataUsers, setDataUsers] = React.useState<IdataUsers[] | []>([]);
 
   let UserID = null;

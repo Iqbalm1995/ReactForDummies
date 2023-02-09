@@ -9,14 +9,21 @@ axios.defaults.baseURL = "https://localhost:7151/v1";
 axios.defaults.timeout = 10000;
 
 interface IPropTypes {
-  limit: string;
-  page: string;
+  limit: number;
+  page: number;
   search: string;
 }
 
 export async function getUserList({ limit, page, search }: IPropTypes) {
   //   const urlGet = `${urlApi}${v1}Users/List`;
   const urlGet = `/Users/List?limit=${limit}&page=${page}&search=${search}`;
+  const response = await axios.get(urlGet);
+
+  return response;
+}
+
+export async function getUserDetail(UserID?: string) {
+  const urlGet = `/Users/${UserID}`;
   const response = await axios.get(urlGet);
 
   return response;
