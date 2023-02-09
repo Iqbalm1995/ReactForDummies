@@ -36,6 +36,7 @@ export function DataTable<Data extends object>({
       <Thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <Tr key={headerGroup.id}>
+            <Th>No.</Th>
             {headerGroup.headers.map((header) => {
               const meta: any = header.column.columnDef.meta;
               return (
@@ -65,8 +66,9 @@ export function DataTable<Data extends object>({
         ))}
       </Thead>
       <Tbody>
-        {table.getRowModel().rows.map((row) => (
+        {table.getRowModel().rows.map((row, index) => (
           <Tr key={row.id}>
+            <Td key={index}>{index + 1}</Td>
             {row.getVisibleCells().map((cell) => {
               const meta: any = cell.column.columnDef.meta;
               return (

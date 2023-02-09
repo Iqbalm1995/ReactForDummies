@@ -16,12 +16,6 @@ import FlexContent from "./HeaderContent";
 import { Link, Outlet } from "react-router-dom";
 import { getUserList } from "../services/UserServices";
 
-type UnitConversion = {
-  fromUnit: string;
-  toUnit: string;
-  factor: number;
-};
-
 interface IdataUsers {
   id: number;
   username: string;
@@ -41,10 +35,6 @@ interface IResponseData {
 const columnHelper = createColumnHelper<IdataUsers>();
 
 const columns = [
-  columnHelper.accessor("id", {
-    cell: (info) => info.getValue(),
-    header: "ID",
-  }),
   columnHelper.accessor("username", {
     cell: (info) => info.getValue(),
     header: "Username",
@@ -52,6 +42,16 @@ const columns = [
   columnHelper.accessor("fullName", {
     cell: (info) => info.getValue(),
     header: "Full Name",
+  }),
+  columnHelper.accessor("id", {
+    cell: (info) => (
+      <Link to={/form?userId=info.getValue()}>
+        <Button colorScheme="teal" variant="solid">
+          Edit
+        </Button>
+      </Link>
+    ),
+    header: "Action",
   }),
 ];
 
@@ -79,8 +79,6 @@ export const TablePage = () => {
       console.log(error);
     }
   }, []);
-
-  console.log(dataUsers);
 
   return (
     <div>
