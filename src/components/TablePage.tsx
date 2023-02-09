@@ -22,11 +22,20 @@ type UnitConversion = {
   factor: number;
 };
 
+interface IDataUsers {
+  id: number;
+  username: string;
+  fullName: string;
+  createdAt: Date;
+  createdBy: string;
+}
+
 interface ResponseData {
   statusCode: number;
   message: string;
   count: number;
   countTotal: number;
+  data: IDataUsers[];
 }
 
 const data: UnitConversion[] = [
@@ -70,7 +79,7 @@ const columns = [
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
-  const [dataUsers, setDataUsers] = React.useState<ResponseData | []>([]);
+  const [dataUsers, setDataUsers] = React.useState<ResponseData>();
 
   let UserID = null;
   let GenerateLinkForm = UserID != null ? `/form?userId=${UserID}` : "/form";
@@ -86,6 +95,8 @@ export const TablePage = () => {
       console.log(error);
     }
   }, []);
+
+  console.log(dataUsers!.data);
 
   return (
     <div>
