@@ -22,70 +22,65 @@ type UnitConversion = {
   factor: number;
 };
 
-interface ResponseData {
+interface IdataUsers {
+  id: number;
+  username: string;
+  fullName: string;
+  createdAt: Date;
+  createdBy: string;
+}
+
+interface IResponseData {
   statusCode: number;
   message: string;
   count: number;
   countTotal: number;
+  data: IdataUsers[];
 }
 
-const data: UnitConversion[] = [
-  {
-    fromUnit: "inches",
-    toUnit: "millimetres (mm)",
-    factor: 25.4,
-  },
-  {
-    fromUnit: "feet",
-    toUnit: "centimetres (cm)",
-    factor: 30.48,
-  },
-  {
-    fromUnit: "yards",
-    toUnit: "metres (m)",
-    factor: 0.91444,
-  },
-];
-
-const columnHelper = createColumnHelper<UnitConversion>();
+const columnHelper = createColumnHelper<IdataUsers>();
 
 const columns = [
-  columnHelper.accessor("fromUnit", {
+  columnHelper.accessor("id", {
     cell: (info) => info.getValue(),
-    header: "To convert",
+    header: "ID",
   }),
-  columnHelper.accessor("toUnit", {
+  columnHelper.accessor("username", {
     cell: (info) => info.getValue(),
-    header: "Into",
+    header: "Username",
   }),
-  columnHelper.accessor("factor", {
+  columnHelper.accessor("fullName", {
     cell: (info) => info.getValue(),
-    header: "Multiply by",
-    meta: {
-      isNumeric: true,
-    },
+    header: "Full Name",
   }),
 ];
+
+const limit = 10;
+const page = 1;
+const search = "";
 
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
-  const [dataUsers, setDataUsers] = React.useState<ResponseData | []>([]);
+  const [resUsers, setResUsers] = React.useState<IResponseData | []>([]);
+  const [dataUsers, setDataUsers] = React.useState<IdataUsers[] | []>([]);
 
   let UserID = null;
   let GenerateLinkForm = UserID != null ? `/form?userId=${UserID}` : "/form";
   // let dataUsers: ResponseData;
   useEffect(() => {
     try {
-      var UserData = getUserList();
+      var UserData = getUserList({ limit, page, search });
       UserData.then(function (response) {
-        console.log(response.data);
-        setDataUsers(response.data);
+        setResUsers(response.data);
+        setDataUsers(response.data.data);
       });
     } catch (error) {
       console.log(error);
     }
   }, []);
+
+  console.log(dataUsers);
 
   return (
     <div>
@@ -104,7 +99,7 @@ export const TablePage = () => {
         </CardHeader>
 
         <CardBody>
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={dataUsers} />
         </CardBody>
       </Card>
     </div>
