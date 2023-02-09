@@ -62,7 +62,6 @@ const search = "";
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
-  const [resUsers, setResUsers] = React.useState<IResponseData>();
   const [dataUsers, setDataUsers] = React.useState<IdataUsers[] | []>([]);
 
   let UserID = null;
@@ -72,7 +71,6 @@ export const TablePage = () => {
     try {
       var UserData = getUserList({ limit, page, search });
       UserData.then(function (response) {
-        setResUsers(response.data);
         setDataUsers(response.data.data);
       });
     } catch (error) {

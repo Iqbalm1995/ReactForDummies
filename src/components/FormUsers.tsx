@@ -42,7 +42,6 @@ import {
   EditIcon,
 } from "@chakra-ui/icons";
 import { Link, Outlet } from "react-router-dom";
-import { getUserDetail } from "../services/UserServices";
 
 interface IinputErrors {
   username: string;
@@ -52,7 +51,7 @@ interface IinputErrors {
 }
 
 interface IDataBinding {
-  id: number;
+  id: string;
   username: string;
   fullName: string;
   password: string;
@@ -84,18 +83,19 @@ let CurrentEditMode = false;
 export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
   CurrentEditMode = editMode;
 
+  const [isDisableInput, setDisable] = React.useState(editMode);
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
-
-  const [isDisableInput, setDisable] = React.useState(editMode);
   const handleDisableClick = () => setDisable(!isDisableInput);
 
-  const data: IDataBinding = dataBinding;
+  // setDataUsers(dataBinding);
+
+  console.log(dataBinding);
 
   const formik = useFormik({
     initialValues: {
-      username: data.username,
-      fullName: data.fullName,
+      username: "",
+      fullName: "",
       password: "",
       passwordConfirm: "",
     },
