@@ -10,7 +10,7 @@ import {
   StackDivider,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import React from "react";
+import React, { useEffect } from "react";
 import { DataTable } from "./DataTable";
 import FlexContent from "./HeaderContent";
 import { Link, Outlet } from "react-router-dom";
@@ -70,18 +70,22 @@ const columns = [
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
+  const [dataUsers, setDataUsers] = React.useState<ResponseData | []>([]);
 
   let UserID = null;
   let GenerateLinkForm = UserID != null ? `/form?userId=${UserID}` : "/form";
-  let dataUsers: ResponseData;
-  try {
-    var UserData = getUserList();
-    UserData.then(function (response) {
-      dataUsers = response.data;
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  // let dataUsers: ResponseData;
+  useEffect(() => {
+    try {
+      var UserData = getUserList();
+      UserData.then(function (response) {
+        console.log(response.data);
+        setDataUsers(response.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   return (
     <div>
