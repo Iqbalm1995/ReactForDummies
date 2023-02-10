@@ -25,7 +25,8 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, redirect, useNavigate } from "react-router-dom";
+import { patchUserUpdate, postUserAdd } from "../services/UserServices";
 
 interface IDataBinding {
   id: string;
@@ -43,7 +44,7 @@ const FormSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
   fullName: Yup.string().required("Required"),
   password: Yup.string().required("Required"),
-  passwordConfirm: Yup.string()
+  passwordConfirmation: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords tidak sama")
     .required("Required"),
 });
@@ -51,6 +52,7 @@ const FormSchema = Yup.object().shape({
 let CurrentEditMode = false;
 
 export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
+  const navigate = useNavigate();
   CurrentEditMode = editMode;
 
   const [isDisableInput, setDisable] = React.useState(editMode);
@@ -63,14 +65,42 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
       username: dataBinding.username,
       fullName: dataBinding.fullName,
       password: dataBinding.password,
-      passwordConfirm: "",
+      passwordConfirmation: "",
     },
     validationSchema: FormSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (values) => {
       console.log(values);
-      alert("Aaowkoawkoaw");
+
+      if (CurrentEditMode == true) {
+        // on edit mode
+        try {
+          var UserUpdate = patchUserUpdate({
+            id: parseInt(dataBinding.id),
+            data: values,
+          });
+          UserUpdate.then(function (response) {
+            alert("Success Edit, oakwoakwokawoka");
+            navigate("/");
+          });
+        } catch (error) {
+          console.log(error);
+          alert("Error Add, oakwoakwokawoka");
+        }
+      } else {
+        // on add mode
+        try {
+          var UserAdd = postUserAdd(values);
+          UserAdd.then(function (response) {
+            alert("Success Add, oakwoakwokawoka");
+            navigate("/");
+          });
+        } catch (error) {
+          console.log(error);
+          alert("Error Add, oakwoakwokawoka");
+        }
+      }
     },
   });
 
@@ -151,18 +181,18 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
             </FormControl>
             <FormControl
               mt="2%"
-              isInvalid={formik.errors.passwordConfirm ? true : false}
+              isInvalid={formik.errors.passwordConfirmation ? true : false}
               isRequired
             >
-              <FormLabel htmlFor="passwordConfirm" fontWeight={"normal"}>
+              <FormLabel htmlFor="passwordConfirmation" fontWeight={"normal"}>
                 Password Confirmation
               </FormLabel>
               <InputGroup size="md">
                 <Input
-                  id="passwordConfirm"
-                  name="passwordConfirm"
+                  id="passwordConfirmation"
+                  name="passwordConfirmation"
                   onChange={formik.handleChange}
-                  value={formik.values.passwordConfirm}
+                  value={formik.values.passwordConfirmation}
                   pr="4.5rem"
                   type={show ? "text" : "password"}
                   placeholder="Enter password Confirmation"
@@ -175,7 +205,7 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
                 </InputRightElement>
               </InputGroup>
               <FormErrorMessage>
-                {formik.errors.passwordConfirm}
+                {formik.errors.passwordConfirmation}
               </FormErrorMessage>
             </FormControl>
           </Container>

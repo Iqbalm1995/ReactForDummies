@@ -12,6 +12,7 @@ import SidebarWithHeader from "./components/LayoutMain";
 import { TablePage } from "./components/TablePage";
 import { FormPage } from "./components/FormPage";
 import Favorite from "./components/Favorite";
+import TablePagePagination from "./components/TablePagePagination";
 
 const router = [
   {
@@ -25,6 +26,10 @@ const router = [
   {
     path: "/Favorite",
     element: <Favorite />,
+  },
+  {
+    path: "/User-list",
+    element: <TablePagePagination />,
   },
 ];
 

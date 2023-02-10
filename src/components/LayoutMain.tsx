@@ -47,7 +47,7 @@ const LinkItems: Array<LinkItemProps> = [
   { name: "Table Page", icon: FiHome, link: "/" },
   { name: "Form Page", icon: FiTrendingUp, link: "/form" },
   { name: "Favourites", icon: FiStar, link: "/Favorite" },
-  { name: "Explore", icon: FiCompass, link: "/" },
+  { name: "Explore", icon: FiCompass, link: "/User-list" },
   { name: "Settings", icon: FiSettings, link: "/" },
 ];
 

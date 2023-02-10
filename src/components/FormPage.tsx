@@ -67,6 +67,8 @@ export const FormPage = () => {
       <FlexContent titleName={TitlePage} breadCrumb={BreadcrumbData} />
       {dataUsers ? (
         <FormUsers editMode={editMode} dataBinding={dataUserBinding} />
+      ) : UserID === null ? (
+        <FormUsers editMode={editMode} dataBinding={dataUserBinding} />
       ) : (
         <SkeletonMedium />
       )}
