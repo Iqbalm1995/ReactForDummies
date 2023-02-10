@@ -1,207 +1,308 @@
-import React, { FC, ChangeEvent, useEffect, useState } from "react";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+
 import {
-  Grid,
-  Center,
-  Select,
-  Text,
-  Button,
-  Stack,
-  ChakraProvider,
-} from "@chakra-ui/react";
-import {
-  Pagination,
-  usePagination,
-  PaginationPage,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationPageGroup,
-  PaginationContainer,
-  PaginationSeparator,
-} from "@ajna/pagination";
-import { getUserListAlt } from "../services/UserServices";
+  Column,
+  Table as ReactTable,
+  PaginationState,
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  ColumnDef,
+  OnChangeFn,
+  flexRender,
+} from '@tanstack/react-table'
+import { makeData, Person } from './util/makeData'
+import { Card, CardBody, Table, Thead, Tbody, Tr, Th, Td, chakra, Button, Select, Input, Flex, Spacer, Box } from '@chakra-ui/react'
+import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 
-const TablePagePagination: FC = () => {
-  // states
-  const [pokemonsTotal, setPokemonsTotal] = useState<number | undefined>(
-    undefined
-  );
-  const [pokemons, setPokemons] = useState<any[]>([]);
 
-  // constants
-  const outerLimit = 2;
-  const innerLimit = 2;
+function TablePagePagination() {
+  const rerender = React.useReducer(() => ({}), {})[1]
 
-  let search = "";
+  const columns = React.useMemo<ColumnDef<Person>[]>(
+    () => [
+      {
+        accessorKey: 'firstName',
+        cell: info => info.getValue(),
+        footer: props => props.column.id,
+      },
+      {
+        accessorFn: row => row.lastName,
+        id: 'lastName',
+        cell: info => info.getValue(),
+        header: () => <span>Last Name</span>,
+        footer: props => props.column.id,
+      },
+      {
+        accessorKey: 'age',
+        header: () => 'Age',
+        footer: props => props.column.id,
+      },
+      {
+        accessorKey: 'visits',
+        header: () => <span>Visits</span>,
+        footer: props => props.column.id,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        footer: props => props.column.id,
+      },
+      {
+        accessorKey: 'progress',
+        header: 'Profile Progress',
+        footer: props => props.column.id,
+      },
+    ],
+    []
+  )
 
-  const {
-    pages,
-    pagesCount,
-    offset,
-    currentPage,
-    setCurrentPage,
-    setIsDisabled,
-    isDisabled,
-    pageSize,
-    setPageSize,
-  } = usePagination({
-    total: pokemonsTotal,
-    limits: {
-      outer: outerLimit,
-      inner: innerLimit,
-    },
-    initialState: {
-      pageSize: 5,
-      isDisabled: false,
-      currentPage: 1,
-    },
-  });
-  // effects
-  useEffect(() => {
-    try {
-      var UserData = getUserListAlt({ pageSize, offset, search });
-      UserData.then(function (response) {
-        setPokemonsTotal(response.data.countTotal);
-        setPokemons(response.data.data);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, [currentPage, pageSize, offset]);
-
-  // handlers
-  const handlePageChange = (nextPage: number): void => {
-    // -> request new data using the page number
-    setCurrentPage(nextPage);
-    console.log("request new data with ->", nextPage);
-  };
-
-  const handlePageSizeChange = (
-    event: ChangeEvent<HTMLSelectElement>
-  ): void => {
-    const pageSize = Number(event.target.value);
-
-    setPageSize(pageSize);
-  };
-
-  const handleDisableClick = (): void => {
-    setIsDisabled((oldState) => !oldState);
-  };
+  const [data, setData] = React.useState(() => makeData(100000))
+  const refreshData = () => setData(() => makeData(100000))
 
   return (
-    <ChakraProvider>
-      <Stack>
-        <Pagination
-          pagesCount={pagesCount}
-          currentPage={currentPage}
-          isDisabled={isDisabled}
-          onPageChange={handlePageChange}
+    <>
+    <Card m="3">
+      <CardBody>
+        <TableData
+          {...{
+            data,
+            columns,
+          }}
+        />
+        {/* <hr />
+        <div>
+          <Button onClick={() => rerender()}>Force Rerender</Button>
+        </div>
+        <div>
+          <Button onClick={() => refreshData()}>Refresh Data</Button>
+        </div> */}
+      </CardBody>
+    </Card>
+      
+    </>
+  )
+}
+
+function TableData({
+  data,
+  columns,
+}: {
+  data: Person[]
+  columns: ColumnDef<Person>[]
+}) {
+  const table = useReactTable({
+    data,
+    columns,
+    // Pipeline
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    //
+    debugTable: true,
+  })
+
+  return (
+    <Box p="2">
+      <Flex
+        minWidth="max-content"
+        justifyContent="flex-end"
+        gap="2"
+        mb="2%"
+      >
+        <span>Show : </span>
+        <Select
+          w="170px"
+          size="sm"
+          value={table.getState().pagination.pageSize}
+          onChange={e => {
+            table.setPageSize(Number(e.target.value))
+          }}
         >
-          <PaginationContainer
-            align="center"
-            justify="space-between"
-            p={4}
-            w="full"
-          >
-            <PaginationPrevious
-              _hover={{
-                bg: "yellow.400",
-              }}
-              bg="yellow.300"
-              onClick={() =>
-                console.log(
-                  "Im executing my own function along with Previous component functionality"
-                )
-              }
-            >
-              <Text>Previous</Text>
-            </PaginationPrevious>
-            <PaginationPageGroup
-              isInline
-              align="center"
-              separator={
-                <PaginationSeparator
-                  onClick={() =>
-                    console.log(
-                      "Im executing my own function along with Separator component functionality"
-                    )
-                  }
-                  bg="blue.300"
-                  fontSize="sm"
-                  w={7}
-                  jumpSize={11}
-                />
-              }
-            >
-              {pages.map((page: number) => (
-                <PaginationPage
-                  w={7}
-                  bg="red.300"
-                  key={`pagination_page_${page}`}
-                  page={page}
-                  onClick={() =>
-                    console.log(
-                      "Im executing my own function along with Page component functionality"
-                    )
-                  }
-                  fontSize="sm"
-                  _hover={{
-                    bg: "green.300",
-                  }}
-                  _current={{
-                    bg: "green.300",
-                    fontSize: "sm",
-                    w: 7,
-                  }}
-                />
-              ))}
-            </PaginationPageGroup>
-            <PaginationNext
-              _hover={{
-                bg: "yellow.400",
-              }}
-              bg="yellow.300"
-              onClick={() =>
-                console.log(
-                  "Im executing my own function along with Next component functionality"
-                )
-              }
-            >
-              <Text>Next</Text>
-            </PaginationNext>
-          </PaginationContainer>
-        </Pagination>
-        <Center w="full">
-          <Button
-            _hover={{
-              bg: "purple.400",
-            }}
-            bg="purple.300"
-            onClick={handleDisableClick}
-          >
-            Disable ON / OFF
-          </Button>
-          <Select ml={3} onChange={handlePageSizeChange} w={40}>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </Select>
-        </Center>
-        <Grid
-          gap={3}
-          mt={20}
-          px={20}
-          templateColumns="repeat(5, 1fr)"
-          templateRows="repeat(2, 1fr)"
-        >
-          {pokemons?.map(({ username }) => (
-            <Center key={username} bg="green.100" p={4}>
-              <Text>{username}</Text>
-            </Center>
+          {[10, 20, 30, 40, 50].map(pageSize => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
           ))}
-        </Grid>
-      </Stack>
-    </ChakraProvider>
-  );
-};
+        </Select>
+        <span>Rows</span>
+        {/* {table.getRowModel().rows.length} Rows */}
+      </Flex>
+      <Table>
+        <Thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <Tr key={headerGroup.id}>
+              <Th>#</Th>
+              {headerGroup.headers.map(header => {
+                return (
+                  <Th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? null : (
+                      <div>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getCanFilter() ? (
+                          <div>
+                            <Filter column={header.column} table={table} />
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </Th>
+                )
+              })}
+            </Tr>
+          ))}
+        </Thead>
+        <Tbody>
+          {table.getRowModel().rows.map((row, index) => {
+            return (
+              <Tr key={row.id}>
+                <Td key={index}>{index + 1}</Td>
+                {row.getVisibleCells().map(cell => {
+                  return (
+                    <Td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  )
+                })}
+              </Tr>
+            )
+          })}
+        </Tbody>
+      </Table>
+      <Flex minWidth="max-content"
+            justifyContent="center"
+            gap="2"
+            mt="2%">
+        <Flex gap="2">
+          <span>Go to page : </span>
+          <Input
+            size="sm"
+            type="number"
+            defaultValue={table.getState().pagination.pageIndex + 1}
+            onChange={e => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0
+              table.setPageIndex(page)
+            }} width="60px"/>
+        </Flex>
+        <Spacer />
+        <Flex gap="2">
+          <Button
+            leftIcon={<ArrowLeftIcon />}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+            size="sm"
+            colorScheme="teal"
+            width="60px"
+          />
+          <Button
+            leftIcon={<ChevronLeftIcon />}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            size="sm"
+            colorScheme="teal"
+            width="60px"
+          />
+          <Flex gap="2" ml="15px" mr="15px">
+            <span>Page : </span>
+            <strong> {table.getState().pagination.pageIndex + 1} </strong>
+              of{' '}
+            <strong> {table.getPageCount()} </strong>
+          </Flex>
+          <Button
+            rightIcon={<ChevronRightIcon />}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            size="sm"
+            colorScheme="teal"
+            width="60px"
+          />
+          <Button
+            rightIcon={<ArrowRightIcon />}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+            size="sm"
+            colorScheme="teal"
+            width="60px"
+          />
+        </Flex>
+      </Flex>
+      {/* <pre>{JSON.stringify(table.getState().pagination, null, 2)}</pre> */}
+    </Box>
+  )
+}
+function Filter({
+  column,
+  table,
+}: {
+  column: Column<any, any>
+  table: ReactTable<any>
+}) {
+  const firstValue = table
+    .getPreFilteredRowModel()
+    .flatRows[0]?.getValue(column.id)
+
+  const columnFilterValue = column.getFilterValue()
+
+  return typeof firstValue === 'number' ? (
+    <Flex gap="2">
+      <Input
+        variant='flushed'
+        mt="8px"
+        size="xs"
+        type="number"
+        value={(columnFilterValue as [number, number])?.[0] ?? ''}
+        onChange={e =>
+          column.setFilterValue((old: [number, number]) => [
+            e.target.value,
+            old?.[1],
+          ])
+        }
+        placeholder={`Min`}
+      />
+      <Input
+        variant='flushed'
+        mt="8px"
+        size="xs"
+        type="number"
+        value={(columnFilterValue as [number, number])?.[1] ?? ''}
+        onChange={e =>
+          column.setFilterValue((old: [number, number]) => [
+            old?.[0],
+            e.target.value,
+          ])
+        }
+        placeholder={`Max`}
+      />
+    </Flex>
+  ) : (
+    <Input
+      variant='flushed'
+      mt="8px"
+      size="xs"
+      type="text"
+      value={(columnFilterValue ?? '') as string}
+      onChange={e => column.setFilterValue(e.target.value)}
+      placeholder={`Search...`}
+    />
+  )
+}
+
+// const rootElement = document.getElementById('root')
+// if (!rootElement) throw new Error('Failed to find the root element')
+
+// ReactDOM.createRoot(rootElement).render(
+//   <React.StrictMode>
+//     <TablePagePagination />
+//   </React.StrictMode>
+// )
+
 
 export default TablePagePagination;
