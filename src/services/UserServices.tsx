@@ -1,4 +1,5 @@
 import axios from "axios";
+import { delay } from "framer-motion";
 
 // url must be https://localhost:7151/v1/Users/List?limit=9999&page=1
 // const urlApi = process.env.BASE_URL_API;
@@ -23,6 +24,7 @@ export async function getUserList({ limit, page, search }: IPropTypes) {
 }
 
 export async function getUserDetail(UserID?: string) {
+  await new Promise((f) => setTimeout(f, 1000));
   const urlGet = `/Users/${UserID}`;
   const response = await axios.get(urlGet);
 

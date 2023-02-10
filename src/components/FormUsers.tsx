@@ -1,31 +1,20 @@
 import React, { useState } from "react";
 import {
-  Progress,
-  Box,
   ButtonGroup,
   Button,
   Heading,
   Flex,
   FormControl,
-  GridItem,
   FormLabel,
   Input,
-  Select,
-  SimpleGrid,
-  InputLeftAddon,
   InputGroup,
-  Textarea,
-  FormHelperText,
   InputRightElement,
   Card,
   CardBody,
   CardHeader,
   Container,
-  CardFooter,
   FormErrorMessage,
-  IconButton,
 } from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/react";
 import {
   Formik,
   Form,
@@ -35,20 +24,8 @@ import {
   FormikProps,
 } from "formik";
 import * as Yup from "yup";
-import {
-  ArrowBackIcon,
-  CheckIcon,
-  CloseIcon,
-  EditIcon,
-} from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { Link, Outlet } from "react-router-dom";
-
-interface IinputErrors {
-  username: string;
-  fullName: string;
-  password: string;
-  passwordConfirm: string;
-}
 
 interface IDataBinding {
   id: string;
@@ -56,13 +33,6 @@ interface IDataBinding {
   fullName: string;
   password: string;
 }
-
-const initalValues = {
-  username: "",
-  fullName: "",
-  password: "",
-  passwordConfirm: "",
-};
 
 interface IPropTypes {
   editMode: boolean;
@@ -88,15 +58,11 @@ export const FormUsers = ({ editMode, dataBinding }: IPropTypes) => {
   const handleClick = () => setShow(!show);
   const handleDisableClick = () => setDisable(!isDisableInput);
 
-  // setDataUsers(dataBinding);
-
-  console.log(dataBinding);
-
   const formik = useFormik({
     initialValues: {
-      username: "",
-      fullName: "",
-      password: "",
+      username: dataBinding.username,
+      fullName: dataBinding.fullName,
+      password: dataBinding.password,
       passwordConfirm: "",
     },
     validationSchema: FormSchema,

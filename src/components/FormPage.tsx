@@ -3,6 +3,8 @@ import { FormUsers } from "./FormUsers";
 import FlexContent from "./HeaderContent";
 import { useSearchParams } from "react-router-dom";
 import { getUserDetail } from "../services/UserServices";
+import { Skeleton, Stack } from "@chakra-ui/react";
+import SkeletonMedium from "./util/SkeletonMedium";
 
 interface IDataBinding {
   id: string;
@@ -26,15 +28,6 @@ export const FormPage = () => {
   let UserID = searchParams.get("userId");
   let editMode = false;
 
-  useEffect(() => {
-    try {
-      var UserData = getUserDetail(UserID?.toString());
-      UserData.then(function (response) {
-        setDataUsers(response.data.data);
-      });
-    } catch (error) {}
-  }, []);
-
   let dataUserBinding: IDataBinding = {
     id: "",
     username: "",
@@ -45,13 +38,23 @@ export const FormPage = () => {
   if (UserID !== null) {
     editMode = true;
 
-    if (dataUsers !== null) {
-      dataUserBinding.id = dataUsers?.id.toString() ?? "";
-      dataUserBinding.username = dataUsers?.username ?? "";
-      dataUserBinding.fullName = dataUsers?.fullName ?? "";
-      dataUserBinding.password = dataUsers?.password ?? "";
+    useEffect(() => {
+      try {
+        var UserData = getUserDetail(UserID?.toString());
+        UserData.then(function (response) {
+          setDataUsers(response.data.data);
+        });
+      } catch (error) {}
+    }, []);
+
+    if (dataUsers) {
+      dataUserBinding.id = dataUsers.id.toString();
+      dataUserBinding.username = dataUsers.username;
+      dataUserBinding.fullName = dataUsers.fullName;
+      dataUserBinding.password = dataUsers.password;
     }
   }
+  console.log(dataUsers);
 
   if (editMode) {
     TitlePage = "Detail Users";
@@ -62,7 +65,11 @@ export const FormPage = () => {
   return (
     <div>
       <FlexContent titleName={TitlePage} breadCrumb={BreadcrumbData} />
-      <FormUsers editMode={editMode} dataBinding={dataUserBinding} />
+      {dataUsers ? (
+        <FormUsers editMode={editMode} dataBinding={dataUserBinding} />
+      ) : (
+        <SkeletonMedium />
+      )}
     </div>
   );
 };

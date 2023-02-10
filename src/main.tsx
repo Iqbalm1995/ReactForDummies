@@ -11,6 +11,7 @@ import {
 import SidebarWithHeader from "./components/LayoutMain";
 import { TablePage } from "./components/TablePage";
 import { FormPage } from "./components/FormPage";
+import Favorite from "./components/Favorite";
 
 const router = [
   {
@@ -21,28 +22,28 @@ const router = [
     path: "/Form",
     element: <FormPage />,
   },
+  {
+    path: "/Favorite",
+    element: <Favorite />,
+  },
 ];
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <BrowserRouter>
-        <SidebarWithHeader>
-          <Routes>
-            {/* <Route path="/" element={<TablePage />} /> */}
-            {router.map((item: any) => {
-              return (
-                <Route
-                  key={item.path}
-                  path={item.path}
-                  element={item.element}
-                />
-              );
-            })}
-          </Routes>
-          {/* <RouterProvider router={router} /> */}
-        </SidebarWithHeader>
-      </BrowserRouter>
-    </ChakraProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ChakraProvider>
+    <BrowserRouter>
+      <SidebarWithHeader>
+        <Routes>
+          {/* <Route path="/" element={<TablePage />} /> */}
+          {router.map((item: any) => {
+            return (
+              <Route key={item.path} path={item.path} element={item.element} />
+            );
+          })}
+        </Routes>
+        {/* <RouterProvider router={router} /> */}
+      </SidebarWithHeader>
+    </BrowserRouter>
+  </ChakraProvider>
+  // </React.StrictMode>
 );
