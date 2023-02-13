@@ -74,6 +74,7 @@ interface IPropUpdateData {
 
 export async function patchUserUpdate({ id, data }: IPropUpdateData) {
   data.id = id;
+  data.updatedBy = data.username;
   const urlGet = `/Users/Edit`;
   const response = await axios.patch(urlGet, data);
 

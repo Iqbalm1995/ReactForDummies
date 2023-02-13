@@ -42,8 +42,12 @@ import {
 import type { IResponseDataUsers, IUsersModel } from "./util/UsersModel";
 import { getUserList } from "../services/UserServices";
 import { Link } from "react-router-dom";
+import FlexContent from "./HeaderContent";
+import SkeletonMedium from "./util/SkeletonMedium";
 
 function Favorite() {
+  const TitlePage = "Table Page";
+  const BreadcrumbData = ["Home", "Table Page"];
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [data, setDataUsers] = React.useState<IUsersModel[] | []>([]);
   const [TotalPages, setTotalPageData] = React.useState<number | 0>(0);
@@ -56,25 +60,25 @@ function Favorite() {
         cell: (info) => info.getValue(),
         header: () => <span>Username</span>,
         footer: (props) => props.column.id,
-        size: 100,
+        size: 500,
       },
       {
         accessorKey: "fullName",
         header: () => <span>Fullname</span>,
         footer: (props) => props.column.id,
-        size: 50,
+        size: 500,
       },
       {
         accessorKey: "id",
         cell: (info) => (
           <Link to={`/form?userId=${info.getValue()}`}>
-            <Button colorScheme="teal" variant="solid" size="sm">
-              Edit
+            <Button colorScheme="teal" variant="solid" size="sm" >
+              Detail
             </Button>
           </Link>
         ),
         header: () => <span>Action</span>,
-        size: 10,
+        size: 200,
       },
     ],
     []
@@ -131,19 +135,28 @@ function Favorite() {
     manualPagination: true,
     // onSortingChange: setSorting,
     // onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
     // Pipeline
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    // getPaginationRowModel: getPaginationRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
     //
     debugTable: false,
+    manualFiltering: true,
   });
 
   return (
     <>
+      <FlexContent titleName={TitlePage} breadCrumb={BreadcrumbData} />
+      <Flex minWidth="max-content" justifyContent="flex-end" gap="2" m="3">
+        <Link to="/form">
+          <Button colorScheme="teal" size="lg" variant="solid">
+            Add User
+          </Button>
+        </Link>
+      </Flex>
       <Card m="3">
         <CardBody>
           <Box p="2">
@@ -193,7 +206,7 @@ function Favorite() {
               <Thead>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <Tr key={headerGroup.id}>
-                    <Th w="10">#</Th>
+                    <Th>#</Th>
                     {headerGroup.headers.map((header) => {
                       return (
                         <Th
@@ -316,6 +329,8 @@ function Favorite() {
         </div> */}
         </CardBody>
       </Card>
+
+
     </>
   );
 }
