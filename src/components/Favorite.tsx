@@ -41,6 +41,7 @@ import {
 } from "@chakra-ui/icons";
 import type { IResponseDataUsers, IUsersModel } from "./util/UsersModel";
 import { getUserList } from "../services/UserServices";
+import { Link } from "react-router-dom";
 
 function Favorite() {
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -55,11 +56,25 @@ function Favorite() {
         cell: (info) => info.getValue(),
         header: () => <span>Username</span>,
         footer: (props) => props.column.id,
+        size: 100,
       },
       {
         accessorKey: "fullName",
         header: () => <span>Fullname</span>,
         footer: (props) => props.column.id,
+        size: 50,
+      },
+      {
+        accessorKey: "id",
+        cell: (info) => (
+          <Link to={`/form?userId=${info.getValue()}`}>
+            <Button colorScheme="teal" variant="solid" size="sm">
+              Edit
+            </Button>
+          </Link>
+        ),
+        header: () => <span>Action</span>,
+        size: 10,
       },
     ],
     []
@@ -178,10 +193,14 @@ function Favorite() {
               <Thead>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <Tr key={headerGroup.id}>
-                    <Th>#</Th>
+                    <Th w="10">#</Th>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <Th key={header.id} colSpan={header.colSpan}>
+                        <Th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          width={header.getSize()}
+                        >
                           {header.isPlaceholder ? null : (
                             <div>
                               {flexRender(
