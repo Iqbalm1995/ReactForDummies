@@ -15,6 +15,7 @@ import { DataTable } from "./DataTable";
 import FlexContent from "./HeaderContent";
 import { Link, Outlet } from "react-router-dom";
 import { getUserList } from "../services/UserServices";
+import { IUsersModel } from "./util/UsersModel";
 
 interface IdataUsers {
   id: number;
@@ -32,7 +33,7 @@ interface IResponseData {
   data: IdataUsers[];
 }
 
-const columnHelper = createColumnHelper<IdataUsers>();
+const columnHelper = createColumnHelper<IUsersModel>();
 
 const columns = [
   columnHelper.accessor("username", {
@@ -62,7 +63,7 @@ const search = "";
 export const TablePage = () => {
   const TitlePage = "Table Page";
   const BreadcrumbData = ["Home", "Table Page"];
-  const [dataUsers, setDataUsers] = React.useState<IdataUsers[] | []>([]);
+  const [dataUsers, setDataUsers] = React.useState<IUsersModel[] | []>([]);
 
   let UserID = null;
   let GenerateLinkForm = UserID != null ? `/form?userId=${UserID}` : "/form";
