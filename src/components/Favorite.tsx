@@ -43,9 +43,7 @@ import type { IResponseDataUsers, IUsersModel } from "./util/UsersModel";
 import { getUserList } from "../services/UserServices";
 
 function Favorite() {
-  const [ResData, setDataUsersRes] = React.useState<IResponseDataUsers | null>(
-    null
-  );
+  const [globalFilter, setGlobalFilter] = React.useState("");
   const [data, setDataUsers] = React.useState<IUsersModel[] | []>([]);
   const [TotalPages, setTotalPageData] = React.useState<number | 0>(0);
 
@@ -91,21 +89,18 @@ function Favorite() {
       var UserData = getUserList({
         limit: pageSize,
         page: pageIndex + 1,
-        search: "",
+        search: globalFilter,
       });
       UserData.then(function (response) {
-        setDataUsersRes(response.data);
         setDataUsers(response.data.data);
         setTotalPageData(Math.ceil((response.data.countTotal ?? 0) / pageSize));
       });
     } catch (error) {
       console.log(error);
     }
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, globalFilter]);
 
-  console.log(pageIndex);
-  console.log(pageSize);
-  console.log(TotalPages);
+  // console.log(globalFilter);
 
   const table = useReactTable({
     data,
@@ -114,13 +109,14 @@ function Favorite() {
     state: {
       // sorting,
       // columnFilters,
-      // globalFilter,
+      globalFilter,
       pagination,
     },
     onPaginationChange: setPagination,
     manualPagination: true,
     // onSortingChange: setSorting,
     // onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     // Pipeline
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -138,27 +134,45 @@ function Favorite() {
           <Box p="2">
             <Flex
               minWidth="max-content"
-              justifyContent="flex-end"
+              justifyContent="center"
               gap="2"
+              mt="2%"
               mb="2%"
             >
-              <span>Show : </span>
-              <Select
-                w="170px"
-                size="sm"
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-              >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize}
-                  </option>
-                ))}
-              </Select>
-              <span>Rows</span>
-              {/* {table.getRowModel().rows.length} Rows */}
+              <Flex gap="2">
+                <span>Search : </span>
+                <Input
+                  size="sm"
+                  type="text"
+                  width="200px"
+                  value={globalFilter ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value ? String(e.target.value) : "";
+                    setGlobalFilter(val);
+                  }}
+                  placeholder="Search all columns..."
+                />
+              </Flex>
+              <Spacer />
+              <Flex gap="2">
+                <span>Show : </span>
+                <Select
+                  w="170px"
+                  size="sm"
+                  value={table.getState().pagination.pageSize}
+                  onChange={(e) => {
+                    table.setPageSize(Number(e.target.value));
+                  }}
+                >
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <option key={pageSize} value={pageSize}>
+                      {pageSize}
+                    </option>
+                  ))}
+                </Select>
+                <span>Rows</span>
+                {/* {table.getRowModel().rows.length} Rows */}
+              </Flex>
             </Flex>
             <Table>
               <Thead>
@@ -174,14 +188,14 @@ function Favorite() {
                                 header.column.columnDef.header,
                                 header.getContext()
                               )}
-                              {header.column.getCanFilter() ? (
+                              {/* {header.column.getCanFilter() ? (
                                 <div>
                                   <Filter
                                     column={header.column}
                                     table={table}
                                   />
                                 </div>
-                              ) : null}
+                              ) : null} */}
                             </div>
                           )}
                         </Th>
@@ -287,6 +301,7 @@ function Favorite() {
   );
 }
 
+// for filter by column
 function Filter({
   column,
   table,
